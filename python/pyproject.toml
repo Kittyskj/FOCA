@@ -1,0 +1,14 @@
+[project]
+name = "foca"
+version = "0.1.0"
+description = "Python rewrite scaffold for FOCA"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "GPL-3.0-or-later" }
+authors = [{ name = "FOCA Maintainers" }]
+
+[project.scripts]
+foca = "foca.cli:main"
+
+[tool.black]
+line-length = 100
