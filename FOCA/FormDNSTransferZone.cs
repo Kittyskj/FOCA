@@ -10,6 +10,7 @@ namespace FOCA
         public FormDnsTransferZone(Form frmParent, ParametersDnsTransferZone currentParameters)
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
             Left = frmParent.Left + (frmParent.Width/2) - Width/2;
             Top = frmParent.Top + (frmParent.Height/2) - Height/2;
             this.currentParameters = currentParameters;

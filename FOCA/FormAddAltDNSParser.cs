@@ -12,6 +12,7 @@ namespace FOCA
         public FormAddAltDnsParser()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         private void btSelectFile_Click(object sender, EventArgs e)

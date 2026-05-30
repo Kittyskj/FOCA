@@ -10,6 +10,7 @@ namespace FOCA
         public FormAddClient()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         private void btAddDomain_Click(object sender, EventArgs e)

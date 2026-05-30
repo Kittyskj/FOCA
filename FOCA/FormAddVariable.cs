@@ -17,6 +17,7 @@ namespace FOCA
         public FormAddVariable(Form frmParent, ParametersAddVariable currentParameters, Color color)
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
             // center the new form
             Left = frmParent.Left + (frmParent.Width - Width)/2;
             Top = frmParent.Top + (frmParent.Height - Height)/2;

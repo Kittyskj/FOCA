@@ -7,6 +7,7 @@ namespace FOCA
         private FormSplashFOCA()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         public FormSplashFOCA(string version) : this()

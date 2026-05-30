@@ -12,6 +12,7 @@ namespace FOCA
         public FormSelectIpRange()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         public FormSelectIpRange(string ipStart, string ipEnd) : this()

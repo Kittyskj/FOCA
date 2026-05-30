@@ -81,14 +81,69 @@ namespace FOCA
         {
             InitializeComponent();
 
-            // Apply modern dark flat theme
+            // Apply modern flat theme
             FOCA.Utilities.ThemeManager.ApplyTheme(this);
+            InitializeThemeMenu();
 
             if (TaskbarManager.IsPlatformSupported)
                 _tm = TaskbarManager.Instance;
 
             ProjectManager = new ProjectManager(this);
             this.updateUITokenSource = new CancellationTokenSource();
+        }
+
+        private void InitializeThemeMenu()
+        {
+            var themeMenuItem = new ToolStripMenuItem("Theme");
+            themeMenuItem.Name = "toolStripMenuItemTheme";
+
+            var darkItem = new ToolStripMenuItem("Dark Theme", null, (s, e) => SwitchTheme("Dark"));
+            darkItem.Name = "toolStripMenuItemThemeDark";
+            darkItem.Checked = FOCA.Utilities.ThemeManager.CurrentTheme == "Dark";
+
+            var lightItem = new ToolStripMenuItem("Light Theme", null, (s, e) => SwitchTheme("Light"));
+            lightItem.Name = "toolStripMenuItemThemeLight";
+            lightItem.Checked = FOCA.Utilities.ThemeManager.CurrentTheme == "Light";
+
+            themeMenuItem.DropDownItems.Add(darkItem);
+            themeMenuItem.DropDownItems.Add(lightItem);
+
+            this.menuStripMain.Items.Add(themeMenuItem);
+        }
+
+        private void SwitchTheme(string themeName)
+        {
+            FOCA.Utilities.ThemeManager.SaveThemePreference(themeName);
+
+            // Update checked state in menu strip
+            foreach (ToolStripItem item in this.menuStripMain.Items)
+            {
+                if (item.Name == "toolStripMenuItemTheme" && item is ToolStripMenuItem themeMenu)
+                {
+                    foreach (ToolStripItem sub in themeMenu.DropDownItems)
+                    {
+                        if (sub is ToolStripMenuItem subMenu)
+                        {
+                            subMenu.Checked = (subMenu.Name == "toolStripMenuItemThemeDark" && themeName == "Dark") ||
+                                              (subMenu.Name == "toolStripMenuItemThemeLight" && themeName == "Light");
+                        }
+                    }
+                }
+            }
+
+            // Apply theme to all open forms
+            var openFormsCopy = new System.Collections.Generic.List<Form>();
+            foreach (Form openForm in System.Windows.Forms.Application.OpenForms)
+            {
+                openFormsCopy.Add(openForm);
+            }
+
+            foreach (Form openForm in openFormsCopy)
+            {
+                FOCA.Utilities.ThemeManager.ApplyTheme(openForm);
+                openForm.Invalidate(true);
+                openForm.Update();
+            }
         }
 
         private void formMain_Load(object sender, EventArgs e)

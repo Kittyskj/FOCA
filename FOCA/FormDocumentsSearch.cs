@@ -9,6 +9,7 @@ namespace FOCA
         public FormDocumentsSearch()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         /// <summary>

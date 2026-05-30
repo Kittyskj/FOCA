@@ -12,6 +12,7 @@ namespace FOCA
         public FormAddMultipleDomains()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         private void button1_Click(object sender, EventArgs e)

@@ -22,6 +22,7 @@ namespace FOCA
         public FormModifyData()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         public FormModifyData(Users u) : this()

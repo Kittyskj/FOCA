@@ -8,6 +8,7 @@ namespace FOCA
         public FormValueNotes()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         public string Value { get; set; }

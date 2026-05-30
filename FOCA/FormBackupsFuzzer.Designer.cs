@@ -1,4 +1,4 @@
-﻿namespace FOCA
+namespace FOCA
 {
     partial class FormBackupsFuzzer
     {

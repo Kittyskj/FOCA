@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -22,6 +22,7 @@ namespace FOCA
         public FormBackupsFuzzer()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         /// <summary>
@@ -31,6 +32,7 @@ namespace FOCA
         public FormBackupsFuzzer(string url)
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
             validStatusCodes = new List<int>();
             panelUrls.lstView.Columns.Add("URL").Width = panelUrls.lstView.Width;
 

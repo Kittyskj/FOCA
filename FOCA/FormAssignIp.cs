@@ -12,6 +12,7 @@ namespace FOCA
         public FormAssignIp(ComputersItem computer)
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
             this.computer = computer;
         }
 

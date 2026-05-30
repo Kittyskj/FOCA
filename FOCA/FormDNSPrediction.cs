@@ -28,6 +28,7 @@ namespace FOCA
             Top = frmParent.Top + (frmParent.Height - Height)/2;
             lstVariants = lstResult;
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
 
             rtbPattern.Text = strDomain;
         }

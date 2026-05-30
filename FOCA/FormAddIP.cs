@@ -13,6 +13,7 @@ namespace FOCA
         public FormAddIp()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         /// <summary>

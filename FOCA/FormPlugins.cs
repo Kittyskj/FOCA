@@ -11,6 +11,7 @@ namespace FOCA
         public FormPlugins()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
             RenderPlugins();
         }
 

@@ -9,6 +9,7 @@ namespace FOCA
         public FormAddDomain()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
             string text;
             if (Program.data.Project.Domain != null)
                 text = "subdomain" + "." + Program.data.Project.Domain;
