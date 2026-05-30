@@ -1,4 +1,4 @@
-﻿using FOCA.Analysis;
+using FOCA.Analysis;
 using FOCA.Analysis.FingerPrinting;
 using FOCA.Analysis.Pinger;
 using FOCA.Core;
@@ -80,6 +80,9 @@ namespace FOCA
         public FormMain()
         {
             InitializeComponent();
+
+            // Apply modern dark flat theme
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
 
             if (TaskbarManager.IsPlatformSupported)
                 _tm = TaskbarManager.Instance;

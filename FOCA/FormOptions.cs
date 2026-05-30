@@ -10,6 +10,7 @@ namespace FOCA
         public FormOptions()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
         }
 
         private void FormOptions_Load(object sender, EventArgs e)

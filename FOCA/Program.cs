@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace FOCA
 {
-    static class Program
+    public static class Program
     {
         private static bool Running;
         private const string FocaDatabaseName = "Foca";
@@ -65,54 +65,78 @@ namespace FOCA
             Running = true;
 
 
-            SqlConnectionStringBuilder connectionStringBuilder = null;
+            string finalConnectionString = null;
+            bool isSqlConn = true;
             bool csUpdated = false;
 
-            try
+            ConnectionStringSettings csFromConfig = ConfigurationManager.ConnectionStrings[nameof(FocaContextDb)];
+            if (csFromConfig != null && !string.IsNullOrEmpty(csFromConfig.ConnectionString))
             {
-                ConnectionStringSettings csFromConfig = ConfigurationManager.ConnectionStrings[nameof(FocaContextDb)];
-                //If there is no connection string configured, try with SQLEXPRESS instance
-                if (csFromConfig == null || String.IsNullOrEmpty(csFromConfig.ConnectionString))
+                string lowerConn = csFromConfig.ConnectionString.ToLower();
+                if (lowerConn.Contains("data source") && (lowerConn.Contains(".db") || lowerConn.Contains("sqlite")))
                 {
+                    isSqlConn = false;
+                    finalConnectionString = csFromConfig.ConnectionString;
+                }
+            }
+
+            if (isSqlConn)
+            {
+                SqlConnectionStringBuilder connectionStringBuilder = null;
+                try
+                {
+                    if (csFromConfig == null || String.IsNullOrEmpty(csFromConfig.ConnectionString))
+                    {
+                        connectionStringBuilder = new SqlConnectionStringBuilder(SQLExpressConnectionString);
+                        csUpdated = true;
+                    }
+                    else
+                    {
+                        connectionStringBuilder = new SqlConnectionStringBuilder(csFromConfig.ConnectionString);
+                        if (String.IsNullOrWhiteSpace(connectionStringBuilder.InitialCatalog))
+                        {
+                            connectionStringBuilder.InitialCatalog = FocaDatabaseName;
+                        }
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    csUpdated = true;
                     connectionStringBuilder = new SqlConnectionStringBuilder(SQLExpressConnectionString);
+                }
+
+                while (!FocaContextDb.IsDatabaseAvailable(connectionStringBuilder.ToString()))
+                {
+                    splashScreen.Invoke((MethodInvoker)(() => MessageBox.Show(splashScreen, "FOCA needs a SQL database. Please setup your connection and try again.", "Database not found", MessageBoxButtons.OK, MessageBoxIcon.Error)));
+
+                    // Display the connection dialog
+                    using (DataConnectionDialog dlg = new DataConnectionDialog(connectionStringBuilder))
+                    {
+                        DialogResult connectionResult = DialogResult.Cancel;
+                        splashScreen.Invoke((MethodInvoker)(() => connectionResult = dlg.ShowDialog(splashScreen)));
+
+                        if (DialogResult.OK != connectionResult)
+                        {
+                            Environment.Exit(0);
+                        }
+                    }
                     csUpdated = true;
                 }
-                else
+
+                finalConnectionString = connectionStringBuilder.ToString();
+                if (csUpdated)
                 {
-                    connectionStringBuilder = new SqlConnectionStringBuilder(csFromConfig.ConnectionString);
-                    if (String.IsNullOrWhiteSpace(connectionStringBuilder.InitialCatalog))
-                    {
-                        connectionStringBuilder.InitialCatalog = FocaDatabaseName;
-                    }
+                    UpdateConnectionString(finalConnectionString);
                 }
             }
-            catch (ArgumentException)
+            else
             {
-                csUpdated = true;
-                connectionStringBuilder = new SqlConnectionStringBuilder(SQLExpressConnectionString);
-            }
-
-            while (!FocaContextDb.IsDatabaseAvailable(connectionStringBuilder.ToString()))
-            {
-                splashScreen.Invoke((MethodInvoker)(() => MessageBox.Show(splashScreen, "FOCA needs a SQL database. Please setup your connection and try again.", "Database not found", MessageBoxButtons.OK, MessageBoxIcon.Error)));
-
-                // Display the connection dialog
-                using (DataConnectionDialog dlg = new DataConnectionDialog(connectionStringBuilder))
+                // SQLite connection - check if database can be opened/created
+                if (!FocaContextDb.IsDatabaseAvailable(finalConnectionString))
                 {
-                    DialogResult connectionResult = DialogResult.Cancel;
-                    splashScreen.Invoke((MethodInvoker)(() => connectionResult = dlg.ShowDialog(splashScreen)));
-
-                    if (DialogResult.OK != connectionResult)
-                    {
-                        Environment.Exit(0);
-                    }
+                    splashScreen.Invoke((MethodInvoker)(() => MessageBox.Show(splashScreen, "FOCA failed to initialize the local SQLite database.", "Database error", MessageBoxButtons.OK, MessageBoxIcon.Error)));
+                    Environment.Exit(0);
                 }
-                csUpdated = true;
-            }
-
-            if (csUpdated)
-            {
-                UpdateConnectionString(connectionStringBuilder.ToString());
             }
 
             data = new Data();

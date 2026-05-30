@@ -10,6 +10,7 @@ namespace FOCA
         public FormAbout()
         {
             InitializeComponent();
+            FOCA.Utilities.ThemeManager.ApplyTheme(this);
             panel2.Anchor = AnchorStyles.Top;
             MinimumSize = new Size(Width, Height - panel2.Top - 10);
             Height -= panel2.Top - 10;
