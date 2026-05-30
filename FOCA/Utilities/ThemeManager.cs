@@ -23,30 +23,30 @@ namespace FOCA.Utilities
             Border
         }
 
-        // Modern Premium Dark Palette (Harmonious zinc and blue shades)
+        // Modern Cyber Dark Palette (Deep graphite-black space theme with glowing cyan highlights)
         private static readonly Color[] DarkPalette = new Color[]
         {
-            Color.FromArgb(24, 24, 27),      // BgDark (zinc-900)
-            Color.FromArgb(39, 39, 42),      // BgPanel (zinc-800)
-            Color.FromArgb(63, 63, 70),      // BgControl (zinc-700)
-            Color.FromArgb(244, 244, 245),   // TextMain (zinc-100)
-            Color.FromArgb(161, 161, 170),   // TextMuted (zinc-400)
-            Color.FromArgb(37, 99, 235),     // AccentBlue (blue-600)
-            Color.FromArgb(29, 78, 216),     // AccentHover (blue-700)
-            Color.FromArgb(82, 82, 91)       // Border (zinc-600)
+            Color.FromArgb(7, 10, 19),       // BgDark (deep cosmic slate black - #070a13)
+            Color.FromArgb(15, 23, 42),      // BgPanel (slate navy cards - #0f172a)
+            Color.FromArgb(30, 41, 59),      // BgControl (slate control bg - #1e293b)
+            Color.FromArgb(248, 250, 252),   // TextMain (bright slate white - #f8fafc)
+            Color.FromArgb(148, 163, 184),   // TextMuted (slate gray - #94a3b8)
+            Color.FromArgb(0, 240, 255),     // AccentBlue (cyber neon cyan highlight)
+            Color.FromArgb(2, 132, 199),     // AccentHover (deep cyber blue)
+            Color.FromArgb(30, 41, 59)       // Border (crisp slate steel lines - #1e293b)
         };
 
-        // Modern Premium Light Palette (Clean zinc and slate shades)
+        // Modern Cyber Light Palette (Clean zinc and slate light theme with ocean blue accents)
         private static readonly Color[] LightPalette = new Color[]
         {
-            Color.FromArgb(244, 244, 245),   // BgDark (zinc-100)
-            Color.FromArgb(255, 255, 255),   // BgPanel (white)
-            Color.FromArgb(228, 228, 231),   // BgControl (zinc-200)
-            Color.FromArgb(24, 24, 27),      // TextMain (zinc-900)
-            Color.FromArgb(113, 113, 122),   // TextMuted (zinc-500)
-            Color.FromArgb(37, 99, 235),     // AccentBlue (blue-600)
-            Color.FromArgb(219, 234, 254),   // AccentHover (light blue highlights)
-            Color.FromArgb(212, 212, 216)    // Border (zinc-300)
+            Color.FromArgb(241, 245, 249),   // BgDark (slate light gray - #f1f5f9)
+            Color.FromArgb(255, 255, 255),   // BgPanel (white card panels)
+            Color.FromArgb(226, 232, 240),   // BgControl (soft gray controls - #e2e8f0)
+            Color.FromArgb(15, 23, 42),      // TextMain (slate navy text - #0f172a)
+            Color.FromArgb(100, 116, 139),   // TextMuted (muted slate gray - #64748b)
+            Color.FromArgb(37, 99, 235),     // AccentBlue (royal blue accent)
+            Color.FromArgb(29, 78, 216),     // AccentHover (darker royal blue)
+            Color.FromArgb(203, 213, 225)    // Border (clean slate gray borders - #cbd5e1)
         };
 
         public static readonly Font FontDefault = new Font("Segoe UI", 9F, FontStyle.Regular);
@@ -127,34 +127,66 @@ namespace FOCA.Utilities
                 }
 
                 // Apply styles based on control type
-                if (control is Panel panel)
+                if (control is SplitContainer splitContainer)
+                {
+                    splitContainer.BorderStyle = BorderStyle.None;
+                    splitContainer.BackColor = GetColor(ColorKey.BgDark);
+                    splitContainer.Panel1.BackColor = GetColor(ColorKey.BgDark);
+                    splitContainer.Panel2.BackColor = GetColor(ColorKey.BgDark);
+
+                    splitContainer.Paint -= SplitContainer_Paint;
+                    splitContainer.Paint += SplitContainer_Paint;
+
+                    ApplyThemeToControls(splitContainer.Panel1.Controls);
+                    ApplyThemeToControls(splitContainer.Panel2.Controls);
+                }
+                else if (control is UserControl userControl)
+                {
+                    userControl.BackColor = GetColor(ColorKey.BgDark);
+                    userControl.ForeColor = GetColor(ColorKey.TextMain);
+                    ApplyThemeToControls(userControl.Controls);
+                }
+                else if (control is TableLayoutPanel tablePanel)
+                {
+                    tablePanel.BackColor = GetColor(ColorKey.BgDark);
+                    tablePanel.ForeColor = GetColor(ColorKey.TextMain);
+                    ApplyThemeToControls(tablePanel.Controls);
+                }
+                else if (control is FlowLayoutPanel flowPanel)
+                {
+                    flowPanel.BackColor = GetColor(ColorKey.BgDark);
+                    flowPanel.ForeColor = GetColor(ColorKey.TextMain);
+                    ApplyThemeToControls(flowPanel.Controls);
+                }
+                else if (control is Panel panel)
                 {
                     if (panel.BorderStyle == BorderStyle.Fixed3D)
                         panel.BorderStyle = BorderStyle.FixedSingle;
 
-                    panel.BackColor = GetColor(ColorKey.BgDark); // Match form background
+                    panel.BackColor = GetColor(ColorKey.BgDark);
                     panel.ForeColor = GetColor(ColorKey.TextMain);
                 }
                 else if (control is Button button)
                 {
                     button.FlatStyle = FlatStyle.Flat;
-                    button.FlatAppearance.BorderSize = 0;
+                    button.FlatAppearance.BorderSize = 1;
+                    button.FlatAppearance.BorderColor = GetColor(ColorKey.Border);
 
-                    // Cohesive style based on naming convention
                     string nameLower = button.Name.ToLower();
-                    if (nameLower.Contains("start") || nameLower.Contains("create") || nameLower.Contains("save") || nameLower.Contains("add") || nameLower.Contains("scan"))
+                    if (nameLower.Contains("start") || nameLower.Contains("create") || nameLower.Contains("save") || nameLower.Contains("add") || nameLower.Contains("scan") || nameLower.Contains("search"))
                     {
                         button.BackColor = GetColor(ColorKey.AccentBlue);
-                        button.ForeColor = Color.White;
+                        button.ForeColor = CurrentTheme == "Dark" ? Color.FromArgb(7, 10, 19) : Color.White;
+                        button.FlatAppearance.BorderColor = GetColor(ColorKey.AccentBlue);
                         button.FlatAppearance.MouseOverBackColor = GetColor(ColorKey.AccentHover);
                     }
                     else
                     {
                         button.BackColor = GetColor(ColorKey.BgControl);
                         button.ForeColor = GetColor(ColorKey.TextMain);
-                        button.FlatAppearance.MouseOverBackColor = CurrentTheme == "Light" 
-                            ? Color.FromArgb(212, 212, 216) 
-                            : Color.FromArgb(82, 82, 91);
+                        button.FlatAppearance.MouseOverBackColor = CurrentTheme == "Light"
+                            ? Color.FromArgb(203, 213, 225)
+                            : Color.FromArgb(47, 55, 71);
                     }
                 }
                 else if (control is TextBox textBox)
@@ -165,7 +197,7 @@ namespace FOCA.Utilities
                 }
                 else if (control is TreeView treeView)
                 {
-                    treeView.BorderStyle = BorderStyle.FixedSingle;
+                    treeView.BorderStyle = BorderStyle.None;
                     treeView.BackColor = GetColor(ColorKey.BgPanel);
                     treeView.ForeColor = GetColor(ColorKey.TextMain);
                     treeView.LineColor = GetColor(ColorKey.TextMuted);
@@ -231,14 +263,14 @@ namespace FOCA.Utilities
                 }
                 else if (control is GroupBox groupBox)
                 {
-                    groupBox.ForeColor = GetColor(ColorKey.AccentBlue); // Accent header
+                    groupBox.ForeColor = GetColor(ColorKey.AccentBlue);
                     groupBox.BackColor = GetColor(ColorKey.BgDark);
                     ApplyThemeToControls(groupBox.Controls);
                 }
                 else if (control is TabControl tabControl)
                 {
                     tabControl.BackColor = GetColor(ColorKey.BgDark);
-                    
+
                     // Enable owner-draw for custom modern tab headers
                     tabControl.DrawMode = TabDrawMode.OwnerDrawFixed;
                     tabControl.DrawItem -= TabControl_DrawItem;
@@ -270,7 +302,7 @@ namespace FOCA.Utilities
                 }
                 else if (control is CheckedListBox checkedListBox)
                 {
-                    checkedListBox.BorderStyle = BorderStyle.FixedSingle;
+                    checkedListBox.BorderStyle = BorderStyle.None;
                     checkedListBox.BackColor = GetColor(ColorKey.BgPanel);
                     checkedListBox.ForeColor = GetColor(ColorKey.TextMain);
                 }
@@ -337,12 +369,34 @@ namespace FOCA.Utilities
             }
         }
 
+        // Custom SplitContainer Drawing
+        private static void SplitContainer_Paint(object sender, PaintEventArgs e)
+        {
+            if (sender is SplitContainer splitContainer)
+            {
+                using (var pen = new Pen(GetColor(ColorKey.Border), 1))
+                {
+                    if (splitContainer.Orientation == Orientation.Vertical)
+                    {
+                        int x = splitContainer.SplitterDistance + (splitContainer.SplitterWidth / 2);
+                        e.Graphics.DrawLine(pen, x, 0, x, splitContainer.Height);
+                    }
+                    else
+                    {
+                        int y = splitContainer.SplitterDistance + (splitContainer.SplitterWidth / 2);
+                        e.Graphics.DrawLine(pen, 0, y, splitContainer.Width, y);
+                    }
+                }
+            }
+        }
+
         // Custom ListView Draw Handlers
         private static void ListView_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
         {
             Color headerBg = GetColor(ColorKey.BgControl);
             Color headerText = GetColor(ColorKey.TextMain);
             Color borderColor = GetColor(ColorKey.Border);
+            Color accentColor = GetColor(ColorKey.AccentBlue);
 
             using (var brush = new SolidBrush(headerBg))
             {
@@ -352,6 +406,12 @@ namespace FOCA.Utilities
             using (var pen = new Pen(borderColor))
             {
                 e.Graphics.DrawRectangle(pen, e.Bounds.X, e.Bounds.Y, e.Bounds.Width - 1, e.Bounds.Height - 1);
+            }
+
+            // Draw thin cyber neon accent line at the bottom of headers
+            using (var pen = new Pen(accentColor, 2))
+            {
+                e.Graphics.DrawLine(pen, e.Bounds.Left, e.Bounds.Bottom - 1, e.Bounds.Right, e.Bounds.Bottom - 1);
             }
 
             TextFormatFlags flags = TextFormatFlags.VerticalCenter | TextFormatFlags.HorizontalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis;
@@ -378,7 +438,7 @@ namespace FOCA.Utilities
                 bool isActive = tabControl.SelectedIndex == e.Index;
 
                 Color headerBg = isActive ? GetColor(ColorKey.AccentBlue) : GetColor(ColorKey.BgControl);
-                Color headerText = isActive ? Color.White : GetColor(ColorKey.TextMain);
+                Color headerText = isActive ? Color.FromArgb(7, 10, 19) : GetColor(ColorKey.TextMain); // Dark text for bright selected tab
 
                 using (var brush = new SolidBrush(headerBg))
                 {
